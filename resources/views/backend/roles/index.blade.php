@@ -38,44 +38,48 @@
                                     <i class="mr-1 align-middle fas fa-plus-circle"></i> Create
                                 </a>
                             </div>
-                            <table id="basic-datatable" class="table nowrap hover">
+                            <table id="basic-datatable" class="table table-hover nowrap">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Position</th>
-                                        <th>Office</th>
-                                        <th>Age</th>
-                                        <th>Start date</th>
-                                        <th>Salary</th>
+                                        <th>#</th>
+                                        <th>Role Name</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    <tr>
-                                        <td>Tiger Nixon</td>
-                                        <td>System Architect</td>
-                                        <td>Edinburgh</td>
-                                        <td>61</td>
-                                        <td>2011/04/25</td>
-                                        <td>$320,800</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Garrett Winters</td>
-                                        <td>Accountant</td>
-                                        <td>Tokyo</td>
-                                        <td>63</td>
-                                        <td>2011/07/25</td>
-                                        <td>$170,750</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Ashton Cox</td>
-                                        <td>Junior Technical Author</td>
-                                        <td>San Francisco</td>
-                                        <td>66</td>
-                                        <td>2009/01/12</td>
-                                        <td>$86,000</td>
-                                    </tr>
-
+                                    @forelse ($roles as $role)
+                                        <tr>
+                                            <td class="align-middle">{{ $loop->iteration }}</td>
+                                            <td class="align-middle">{{ $role->name }}</td>
+                                            <td class="py-0 align-middle">
+                                                <div class="mb-2 btn-group">
+                                                    <button type="button"
+                                                        class="btn btn-link dropdown-toggle waves-effect waves-light"
+                                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+                                                            class="bx bx-dots-vertical-rounded"></i></button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('roles.edit', $role->id) }}">
+                                                            <i class="mr-2 fas fa-edit text-warning"></i>Edit
+                                                        </a>
+                                                        <a class="dropdown-item" href="javascript:void(0)"
+                                                            onclick="event.preventDefault();document.getElementById('delete-form-{{ $role->id }}').submit();">
+                                                            <i class="mr-2 fas fa-trash-alt text-danger"></i>Delete
+                                                        </a>
+                                                        <form method="POST" action="{{ route('roles.delete', $role->id) }}"
+                                                            id="delete-form-{{ $role->id }}" style="display: none">
+                                                            @csrf
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="text-center">No records found.</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
 

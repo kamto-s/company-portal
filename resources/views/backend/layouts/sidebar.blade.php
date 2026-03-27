@@ -23,8 +23,15 @@
 
                       <li>
                           <a href="{{ route('roles.index') }}" class=" waves-effect">
-                              <i class="fas fa-user-cog"></i>
+                              <i class="fas fa-user-shield"></i>
                               <span class="ml-1">Roles</span>
+                          </a>
+                      </li>
+
+                      <li>
+                          <a href="#" class=" waves-effect">
+                              <i class="fas fa-user-lock"></i>
+                              <span class="ml-1">Permissions</span>
                           </a>
                       </li>
 

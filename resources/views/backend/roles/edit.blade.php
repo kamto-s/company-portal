@@ -1,5 +1,5 @@
 @extends('backend.layouts.app')
-@section('title', 'Create Role')
+@section('title', 'Edit Role')
 @push('css')
     <link href="{{ asset('backend') }}/plugins/datatables/dataTables.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/datatables/responsive.bootstrap4.css" rel="stylesheet" type="text/css" />
@@ -36,13 +36,13 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">@yield('title')</h4>
-                            <form method="POST" action="{{ route('roles.store') }}">
+                            <form method="POST" action="{{ route('roles.update', $role->id) }}">
                                 @csrf
                                 <div class="form-group row">
                                     <label for="role_name" class="col-sm-1 col-form-label">Role Name</label>
                                     <div class="col-sm-11">
                                         <input type="text" class="form-control" id="role_name" name="role_name"
-                                            placeholder="Enter Role Name">
+                                            placeholder="Enter Role Name" value="{{ $role->name }}">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -51,7 +51,8 @@
                                 <hr>
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="checkPermissionAll"
-                                        value="1">
+                                        value="1"
+                                        {{ count($groupedPermissions->flatten()) === count($rolePermissions) ? 'checked' : '' }}>
                                     <label class="custom-control-label" for="checkPermissionAll">All</label>
                                 </div>
                                 <hr>
@@ -62,7 +63,12 @@
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox" class="custom-control-input"
                                                     id="{{ Str::slug($groupName) }}" value="{{ $groupName }}"
-                                                    onclick="checkPermissionByGroup('role-{{ $loop->iteration }}-management-checkbox', this)">
+                                                    onclick="checkPermissionByGroup('role-{{ $loop->iteration }}-management-checkbox', this)"
+                                                    {{ $permissions->every(function ($permission) use ($rolePermissions) {
+                                                        return in_array($permission->name, $rolePermissions);
+                                                    })
+                                                        ? 'checked'
+                                                        : '' }}>
                                                 <label class="custom-control-label"
                                                     for="{{ Str::slug($groupName) }}">{{ $groupName }}</label>
                                             </div>
@@ -74,7 +80,8 @@
                                                     <div class="custom-control custom-checkbox">
                                                         <input type="checkbox" class="custom-control-input"
                                                             id="checkPermission{{ $permission->id }}" name="permissions[]"
-                                                            value="{{ $permission->name }}">
+                                                            value="{{ $permission->name }}"
+                                                            {{ in_array($permission->name, $rolePermissions) ? 'checked' : '' }}>
                                                         <label class="custom-control-label"
                                                             for="checkPermission{{ $permission->id }}">{{ $permission->name }}</label>
                                                     </div>
