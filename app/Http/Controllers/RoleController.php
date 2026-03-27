@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -41,7 +42,9 @@ class RoleController extends Controller
             $role->syncPermissions($permissions);
         }
 
-        return redirect()->route('roles.index')->with(['message' => 'Role created successfully']);
+        Alert::success(title: 'Success', text: 'Role created successfully');
+
+        return redirect()->route('roles.index');
     }
 
     public function edit($id)
@@ -73,7 +76,9 @@ class RoleController extends Controller
             $role->syncPermissions($permissions);
         }
 
-        return redirect()->route('roles.index')->with(['message' => 'Role updated successfully']);
+        Alert::success(title: 'Success', text: 'Role updated successfully');
+
+        return redirect()->route('roles.index');
     }
 
     public function delete($id)
@@ -86,6 +91,8 @@ class RoleController extends Controller
             }
         }
 
-        return redirect()->route('roles.index')->with(['message' => 'Role deleted successfully']);
+        Alert::success(title: 'Success', text: 'Role deleted successfully');
+
+        return redirect()->route('roles.index');
     }
 }

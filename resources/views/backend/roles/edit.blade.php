@@ -38,6 +38,7 @@
                             <h4 class="card-title">@yield('title')</h4>
                             <form method="POST" action="{{ route('roles.update', $role->id) }}">
                                 @csrf
+                                @method('PUT')
                                 <div class="form-group row">
                                     <label for="role_name" class="col-sm-1 col-form-label">Role Name</label>
                                     <div class="col-sm-11">
@@ -126,6 +127,9 @@
     <!-- Datatables init -->
     <script src="{{ asset('backend') }}/assets/pages/datatables-demo.js"></script>
 
+    <!-- SweetAlert2 -->
+    <script src="{{ asset('backend') }}/plugins/sweetalert2custom/sweetalert2.all.min.js"></script>
+
     {{-- custom js --}}
     <script>
         function checkPermissionByGroup(className, checkthis) {
@@ -172,5 +176,14 @@
                 groupCheckbox.prop('checked', hasChecked);
             });
         })
+
+        @if ($errors->any())
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Failed',
+                text: 'Please check the form for errors and try again.',
+                confirmButtonText: 'OK'
+            });
+        @endif
     </script>
 @endpush

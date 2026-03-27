@@ -5,6 +5,7 @@
     <link href="{{ asset('backend') }}/plugins/datatables/responsive.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/datatables/buttons.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/datatables/select.bootstrap4.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="{{ asset('backend') }}/backend/plugins/sweetalert2custom/sweetalert2.min.css">
 @endpush
 @section('content')
     <div class="page-content">
@@ -63,13 +64,15 @@
                                                             href="{{ route('roles.edit', $role->id) }}">
                                                             <i class="mr-2 fas fa-edit text-warning"></i>Edit
                                                         </a>
-                                                        <a class="dropdown-item" href="javascript:void(0)"
-                                                            onclick="event.preventDefault();document.getElementById('delete-form-{{ $role->id }}').submit();">
+                                                        <a class="dropdown-item btn-delete" href="javascript:void(0)"
+                                                            data-id="{{ $role->id }}">
                                                             <i class="mr-2 fas fa-trash-alt text-danger"></i>Delete
                                                         </a>
-                                                        <form method="POST" action="{{ route('roles.delete', $role->id) }}"
+                                                        <form method="POST"
+                                                            action="{{ route('roles.delete', $role->id) }}"
                                                             id="delete-form-{{ $role->id }}" style="display: none">
                                                             @csrf
+                                                            @method('DELETE')
                                                         </form>
                                                     </div>
                                                 </div>
@@ -110,4 +113,42 @@
 
     <!-- Datatables init -->
     <script src="{{ asset('backend') }}/assets/pages/datatables-demo.js"></script>
+
+    <!-- SweetAlert2 custom -->
+    <script src="{{ asset('backend') }}/plugins/sweetalert2custom/sweetalert2.all.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            console.log('Delete script initialized');
+
+            $('.btn-delete').on('click', function(e) {
+                e.preventDefault();
+                var roleId = $(this).data('id');
+                var formId = 'delete-form-' + roleId;
+
+                console.log('Delete clicked - Role ID: ' + roleId + ', Form ID: ' + formId);
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        console.log('Confirmed - Submitting form: ' + formId);
+                        var form = document.getElementById(formId);
+                        if (form) {
+                            form.submit();
+                        } else {
+                            console.error('Form not found with ID: ' + formId);
+                            Swal.fire('Error', 'Form not found', 'error');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 @endpush

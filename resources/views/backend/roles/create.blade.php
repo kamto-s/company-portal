@@ -5,6 +5,7 @@
     <link href="{{ asset('backend') }}/plugins/datatables/responsive.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/datatables/buttons.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/datatables/select.bootstrap4.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('backend') }}/plugins/sweetalert2custom/sweetalert2.min.css" rel="stylesheet" type="text/css">
 @endpush
 @section('content')
     <div class="page-content">
@@ -41,8 +42,12 @@
                                 <div class="form-group row">
                                     <label for="role_name" class="col-sm-1 col-form-label">Role Name</label>
                                     <div class="col-sm-11">
-                                        <input type="text" class="form-control" id="role_name" name="role_name"
-                                            placeholder="Enter Role Name">
+                                        <input type="text" class="form-control @error('role_name') is-invalid @enderror"
+                                            id="role_name" name="role_name" placeholder="Enter Role Name"
+                                            value="{{ old('role_name') }}">
+                                        @error('role_name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -119,6 +124,9 @@
     <!-- Datatables init -->
     <script src="{{ asset('backend') }}/assets/pages/datatables-demo.js"></script>
 
+    <!-- SweetAlert2 -->
+    <script src="{{ asset('backend') }}/plugins/sweetalert2custom/sweetalert2.all.min.js"></script>
+
     {{-- custom js --}}
     <script>
         function checkPermissionByGroup(className, checkthis) {
@@ -165,5 +173,14 @@
                 groupCheckbox.prop('checked', hasChecked);
             });
         })
+
+        @if ($errors->any())
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Failed',
+                text: 'Please check the form for errors and try again.',
+                confirmButtonText: 'OK'
+            });
+        @endif
     </script>
 @endpush
