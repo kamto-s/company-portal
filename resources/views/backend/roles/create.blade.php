@@ -39,13 +39,53 @@
                             <form>
                                 <div class="form-group row">
                                     <label for="colFormLabel" class="col-sm-1 col-form-label">Role Name</label>
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-11">
                                         <input type="email" class="form-control" id="colFormLabel"
                                             placeholder="Enter Role Name">
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                <div class="form-group row">
+                                    <label for="colFormLabel" class="col-sm-1 col-form-label">Permissions</label>
+                                </div>
+                                <hr>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="checkPermissionAll"
+                                        value="1">
+                                    <label class="custom-control-label" for="checkPermissionAll">All</label>
+                                </div>
+                                <hr>
+                                @foreach ($groupedPermissions as $groupName => $permissions)
+                                    <div class="form-group row">
+
+                                        <div class="col-sm-1">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input"
+                                                    id="{{ Str::slug($groupName) }}" value="{{ $groupName }}"
+                                                    onclick="checkPermissionByGroup('role-{{ $loop->iteration }}-management-checkbox', this)">
+                                                <label class="custom-control-label"
+                                                    for="{{ Str::slug($groupName) }}">{{ $groupName }}</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-11 role-{{ $loop->iteration }}-management-checkbox">
+                                            <div>
+                                                @foreach ($permissions->sortBy('name') as $permission)
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="checkPermission{{ $permission->id }}" name="permissions[]"
+                                                            value="{{ $permission->name }}">
+                                                        <label class="custom-control-label"
+                                                            for="checkPermission{{ $permission->id }}">{{ $permission->name }}</label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                <div class="mt-5 mb-0 form-group">
+                                    <a href="{{ route('roles.index') }}" class="mr-2 btn btn-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
                                 </div>
                             </form>
                         </div>
@@ -75,4 +115,52 @@
 
     <!-- Datatables init -->
     <script src="{{ asset('backend') }}/assets/pages/datatables-demo.js"></script>
+
+    {{-- custom js --}}
+    <script>
+        function checkPermissionByGroup(className, checkthis) {
+            const groupIdName = $("#" + checkthis.id);
+            const classCheckBox = $('.' + className + ' input');
+
+            if (groupIdName.is(':checked')) {
+                classCheckBox.prop('checked', true);
+            } else {
+                classCheckBox.prop('checked', false);
+            }
+
+            implementAllChecked();
+        }
+
+        function implementAllChecked() {
+            const countPermissions = $('input[name="permissions[]"]').length;
+            const countCheckedPermissions = $('input[name="permissions[]"]:checked').length;
+
+            if (countPermissions === countCheckedPermissions) {
+                $('#checkPermissionAll').prop('checked', true);
+            } else {
+                $('#checkPermissionAll').prop('checked', false);
+            }
+        }
+
+        $(document).ready(function() {
+            implementAllChecked();
+
+            $('#checkPermissionAll').click(function() {
+                const isChecked = $(this).is(':checked');
+                $('input[type="checkbox"]').prop('checked', isChecked);
+            });
+
+            $('input[name="permissions[]"]').on('change', function() {
+                implementAllChecked();
+
+                const groupContainer = $(this).closest('.row');
+                const groupCheckbox = groupContainer.find('.custom-control-input').first();
+                const permissionCheckboxes = groupContainer.find('input[name="permissions[]"]');
+
+                const hasChecked = permissionCheckboxes.filter(':checked').length > 0;
+
+                groupCheckbox.prop('checked', hasChecked);
+            });
+        })
+    </script>
 @endpush

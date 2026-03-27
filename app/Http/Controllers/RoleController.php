@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
@@ -13,6 +13,12 @@ class RoleController extends Controller
 
     public function create()
     {
-        return view('backend.roles.create');
+        $permissions = Permission::all();
+
+        $groupedPermissions = $permissions->groupBy('group_name');
+
+        $groupedPermissions = $groupedPermissions->sortKeys();
+
+        return view('backend.roles.create', compact('groupedPermissions'));
     }
 }
