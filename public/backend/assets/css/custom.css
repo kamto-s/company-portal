@@ -1,0 +1,39 @@
+.dataTables_paginate .pagination .page-item .page-link {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    line-height: 34px !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    border-radius: 50% !important;
+    text-align: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    border: 1px solid transparent !important;
+}
+
+.dataTables_paginate .pagination .page-item.active .page-link,
+.dataTables_paginate .pagination .page-item .page-link:hover {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    line-height: 34px !important;
+}
+
+.dataTables_paginate .pagination .page-item.previous .page-link,
+.dataTables_paginate .pagination .page-item.next .page-link {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+}
+
+.dataTables_paginate .pagination .page-item {
+    margin: 0 2px !important;
+}
+
+.dataTables_paginate .pagination {
+    margin-left: -2px !important;
+}

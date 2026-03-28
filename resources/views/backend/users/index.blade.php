@@ -1,5 +1,5 @@
 @extends('backend.layouts.app')
-@section('title', 'Roles')
+@section('title', 'Users')
 @push('css')
     <link href="{{ asset('backend') }}/plugins/datatables/dataTables.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/datatables/responsive.bootstrap4.css" rel="stylesheet" type="text/css" />
@@ -36,7 +36,7 @@
                         <div class="card-body">
                             <div class="mb-3 d-flex align-items-center justify-content-between">
                                 <h4 class="m-0 card-title">@yield('title')</h4>
-                                <a href="{{ route('roles.create') }}" class="btn btn-primary justify-content-between">
+                                <a href="{{ route('users.create') }}" class="btn btn-primary justify-content-between">
                                     <i class="mr-1 align-middle fas fa-plus-circle"></i> Create
                                 </a>
                             </div>
@@ -44,16 +44,18 @@
                                 <thead>
                                     <tr>
                                         <th class="row">#</th>
-                                        <th>Role Name</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    @forelse ($roles as $role)
+                                    @forelse ($users as $user)
                                         <tr>
                                             <td class="align-middle">{{ $loop->iteration }}</td>
-                                            <td class="align-middle">{{ $role->name }}</td>
+                                            <td class="align-middle">{{ $user->name }}</td>
+                                            <td class="align-middle">{{ $user->email }}</td>
                                             <td class="py-0 align-middle">
                                                 <div class="mb-2 btn-group">
                                                     <button type="button"
@@ -62,16 +64,16 @@
                                                             class="bx bx-dots-vertical-rounded"></i></button>
                                                     <div class="dropdown-menu">
                                                         <a class="dropdown-item"
-                                                            href="{{ route('roles.edit', $role->id) }}">
+                                                            href="{{ route('users.edit', $user->id) }}">
                                                             <i class="mr-2 fas fa-edit text-warning"></i>Edit
                                                         </a>
                                                         <a class="dropdown-item btn-delete" href="javascript:void(0)"
-                                                            data-id="{{ $role->id }}">
+                                                            data-id="{{ $user->id }}">
                                                             <i class="mr-2 fas fa-trash-alt text-danger"></i>Delete
                                                         </a>
                                                         <form method="POST"
-                                                            action="{{ route('roles.delete', $role->id) }}"
-                                                            id="delete-form-{{ $role->id }}" style="display: none">
+                                                            action="{{ route('users.delete', $user->id) }}"
+                                                            id="delete-form-{{ $user->id }}" style="display: none">
                                                             @csrf
                                                             @method('DELETE')
                                                         </form>
@@ -119,7 +121,6 @@
     <script src="{{ asset('backend') }}/plugins/sweetalert2custom/sweetalert2.all.min.js"></script>
     <script>
         $(document).ready(function() {
-
             $('.btn-delete').on('click', function(e) {
                 e.preventDefault();
                 var roleId = $(this).data('id');

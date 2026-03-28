@@ -1,0 +1,189 @@
+@extends('backend.layouts.app')
+@section('title', 'Edit Role')
+@push('css')
+    <link href="{{ asset('backend') }}/plugins/datatables/dataTables.bootstrap4.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('backend') }}/plugins/datatables/responsive.bootstrap4.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('backend') }}/plugins/datatables/buttons.bootstrap4.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('backend') }}/plugins/datatables/select.bootstrap4.css" rel="stylesheet" type="text/css" />
+@endpush
+@section('content')
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0 font-size-18">@yield('title')</h4>
+
+                        <div class="page-title-right">
+                            <ol class="m-0 breadcrumb">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Company</a></li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('roles.index') }}">List Roles</a>
+                                </li>
+                                <li class="breadcrumb-item active">@yield('title')</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">@yield('title')</h4>
+                            <form method="POST" action="{{ route('roles.update', $role->id) }}">
+                                @csrf
+                                @method('PUT')
+                                <div class="form-group row">
+                                    <label for="role_name" class="col-sm-1 col-form-label">Role Name</label>
+                                    <div class="col-sm-11">
+                                        <input type="text" class="form-control" id="role_name" name="role_name"
+                                            placeholder="Enter Role Name" value="{{ $role->name }}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="colFormLabel" class="col-sm-1 col-form-label">Permissions</label>
+                                </div>
+                                <hr>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="checkPermissionAll"
+                                        value="1"
+                                        {{ count($groupedPermissions->flatten()) === count($rolePermissions) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="checkPermissionAll">All</label>
+                                </div>
+                                <hr>
+                                @foreach ($groupedPermissions as $groupName => $permissions)
+                                    <div class="form-group row">
+
+                                        <div class="col-sm-1">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input"
+                                                    id="{{ Str::slug($groupName) }}" value="{{ $groupName }}"
+                                                    onclick="checkPermissionByGroup('role-{{ $loop->iteration }}-management-checkbox', this)"
+                                                    {{ $permissions->every(function ($permission) use ($rolePermissions) {
+                                                        return in_array($permission->name, $rolePermissions);
+                                                    })
+                                                        ? 'checked'
+                                                        : '' }}>
+                                                <label class="custom-control-label"
+                                                    for="{{ Str::slug($groupName) }}">{{ $groupName }}</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-11 role-{{ $loop->iteration }}-management-checkbox">
+                                            <div>
+                                                @foreach ($permissions->sortBy('name') as $permission)
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="checkPermission{{ $permission->id }}" name="permissions[]"
+                                                            value="{{ $permission->name }}"
+                                                            {{ in_array($permission->name, $rolePermissions) ? 'checked' : '' }}>
+                                                        <label class="custom-control-label"
+                                                            for="checkPermission{{ $permission->id }}">{{ $permission->name }}</label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                <div class="mt-5 mb-0 form-group">
+                                    <a href="{{ route('roles.index') }}" class="mr-2 align-middle btn btn-secondary"><i
+                                            class="mr-1 fas fa-arrow-left"></i> Back</a>
+                                    <button type="submit" class="align-baseline btn btn-primary"><i
+                                            class="mr-1 fas fa-save"></i> Save
+                                        Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+@push('js')
+    <!-- third party js -->
+    <script src="{{ asset('backend') }}/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/dataTables.bootstrap4.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/dataTables.responsive.min.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/responsive.bootstrap4.min.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/dataTables.buttons.min.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/buttons.bootstrap4.min.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/buttons.html5.min.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/buttons.flash.min.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/buttons.print.min.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/dataTables.keyTable.min.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/dataTables.select.min.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/pdfmake.min.js"></script>
+    <script src="{{ asset('backend') }}/plugins/datatables/vfs_fonts.js"></script>
+    <!-- third party js ends -->
+
+    <!-- Datatables init -->
+    <script src="{{ asset('backend') }}/assets/pages/datatables-demo.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="{{ asset('backend') }}/plugins/sweetalert2custom/sweetalert2.all.min.js"></script>
+
+    {{-- custom js --}}
+    <script>
+        function checkPermissionByGroup(className, checkthis) {
+            const groupIdName = $("#" + checkthis.id);
+            const classCheckBox = $('.' + className + ' input');
+
+            if (groupIdName.is(':checked')) {
+                classCheckBox.prop('checked', true);
+            } else {
+                classCheckBox.prop('checked', false);
+            }
+
+            implementAllChecked();
+        }
+
+        function implementAllChecked() {
+            const countPermissions = $('input[name="permissions[]"]').length;
+            const countCheckedPermissions = $('input[name="permissions[]"]:checked').length;
+
+            if (countPermissions === countCheckedPermissions) {
+                $('#checkPermissionAll').prop('checked', true);
+            } else {
+                $('#checkPermissionAll').prop('checked', false);
+            }
+        }
+
+        $(document).ready(function() {
+            implementAllChecked();
+
+            $('#checkPermissionAll').click(function() {
+                const isChecked = $(this).is(':checked');
+                $('input[type="checkbox"]').prop('checked', isChecked);
+            });
+
+            $('input[name="permissions[]"]').on('change', function() {
+                implementAllChecked();
+
+                const groupContainer = $(this).closest('.row');
+                const groupCheckbox = groupContainer.find('.custom-control-input').first();
+                const permissionCheckboxes = groupContainer.find('input[name="permissions[]"]');
+
+                const hasChecked = permissionCheckboxes.filter(':checked').length > 0;
+
+                groupCheckbox.prop('checked', hasChecked);
+            });
+        })
+
+        @if ($errors->any())
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Failed',
+                text: 'Please check the form for errors and try again.',
+                confirmButtonText: 'OK'
+            });
+        @endif
+    </script>
+@endpush
