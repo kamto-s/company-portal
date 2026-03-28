@@ -45,6 +45,7 @@
                                     <tr>
                                         <th class="row">#</th>
                                         <th>Role Name</th>
+                                        <th>Created At</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -54,6 +55,7 @@
                                         <tr>
                                             <td class="align-middle">{{ $loop->iteration }}</td>
                                             <td class="align-middle">{{ $role->name }}</td>
+                                            <td class="align-middle">{{ $role->created_at->format('d-M-y h:i:s') }}</td>
                                             <td class="py-0 align-middle">
                                                 <div class="mb-2 btn-group">
                                                     <button type="button"

@@ -21,7 +21,7 @@
                             <ol class="m-0 breadcrumb">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Company</a></li>
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('roles.index') }}">List Roles</a>
+                                    <a href="{{ route('users.index') }}">List users</a>
                                 </li>
                                 <li class="breadcrumb-item active">@yield('title')</li>
                             </ol>
@@ -37,22 +37,84 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">@yield('title')</h4>
-                            <form method="POST" action="{{ route('roles.store') }}">
+                            <form method="POST" action="{{ route('users.store') }}">
                                 @csrf
                                 <div class="form-group row">
-                                    <label for="role_name" class="col-sm-1 col-form-label">Role Name</label>
+                                    <label for="name" class="col-sm-1 col-form-label">Name</label>
                                     <div class="col-sm-11">
-                                        <input type="text" class="form-control @error('role_name') is-invalid @enderror"
-                                            id="role_name" name="role_name" placeholder="Enter Role Name"
-                                            value="{{ old('role_name') }}">
-                                        @error('role_name')
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                            id="name" name="name" placeholder="Enter Name"
+                                            value="{{ old('name') }}">
+                                        @error('name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="email" class="col-sm-1 col-form-label">Email</label>
+                                    <div class="col-sm-11">
+                                        <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                            id="email" name="email" placeholder="Enter Email"
+                                            value="{{ old('email') }}">
+                                        @error('email')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="password" class="col-sm-1 col-form-label">Password</label>
+                                    <div class="col-sm-11">
+                                        <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                            id="password" name="password" placeholder="Enter Password"
+                                            value="{{ old('password') }}">
+                                        @error('password')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="role_assign" class="col-sm-1 col-form-label">Role</label>
+                                    <div class="col-sm-11">
+                                        <select multiple class="form-control @error('role_assign') is-invalid @enderror"
+                                            id="role_assign" name="role_assign[]">
+                                            @foreach ($roles as $role)
+                                                <option value="{{ $role->id }}"
+                                                    {{ in_array($role->id, old('role_assign', [])) ? 'selected' : '' }}>
+                                                    {{ $role->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('role_assign')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="status" class="col-sm-1 col-form-label">Status</label>
+                                    <div class="mt-1 col-sm-11">
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="inactive" name="status" value="inactive"
+                                                class="custom-control-input"
+                                                {{ old('status', 'active') == 'inactive' ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="inactive">Inactive</label>
+                                        </div>
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="active" name="status" value="active"
+                                                class="custom-control-input"
+                                                {{ old('status', 'active') == 'active' ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="active">Active</label>
+                                        </div>
+                                        @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
 
                                 <div class="mt-5 mb-0 form-group">
-                                    <a href="{{ route('roles.index') }}" class="mr-2 align-middle btn btn-secondary"><i
+                                    <a href="{{ route('users.index') }}" class="mr-2 align-middle btn btn-secondary"><i
                                             class="mr-1 fas fa-arrow-left"></i> Back</a>
                                     <button type="submit" class="align-baseline btn btn-primary"><i
                                             class="mr-1 fas fa-save"></i> Save
@@ -91,51 +153,6 @@
 
     {{-- custom js --}}
     <script>
-        function checkPermissionByGroup(className, checkthis) {
-            const groupIdName = $("#" + checkthis.id);
-            const classCheckBox = $('.' + className + ' input');
-
-            if (groupIdName.is(':checked')) {
-                classCheckBox.prop('checked', true);
-            } else {
-                classCheckBox.prop('checked', false);
-            }
-
-            implementAllChecked();
-        }
-
-        function implementAllChecked() {
-            const countPermissions = $('input[name="permissions[]"]').length;
-            const countCheckedPermissions = $('input[name="permissions[]"]:checked').length;
-
-            if (countPermissions === countCheckedPermissions) {
-                $('#checkPermissionAll').prop('checked', true);
-            } else {
-                $('#checkPermissionAll').prop('checked', false);
-            }
-        }
-
-        $(document).ready(function() {
-            implementAllChecked();
-
-            $('#checkPermissionAll').click(function() {
-                const isChecked = $(this).is(':checked');
-                $('input[type="checkbox"]').prop('checked', isChecked);
-            });
-
-            $('input[name="permissions[]"]').on('change', function() {
-                implementAllChecked();
-
-                const groupContainer = $(this).closest('.row');
-                const groupCheckbox = groupContainer.find('.custom-control-input').first();
-                const permissionCheckboxes = groupContainer.find('input[name="permissions[]"]');
-
-                const hasChecked = permissionCheckboxes.filter(':checked').length > 0;
-
-                groupCheckbox.prop('checked', hasChecked);
-            });
-        })
-
         @if ($errors->any())
             Swal.fire({
                 icon: 'error',

@@ -46,6 +46,9 @@
                                         <th class="row">#</th>
                                         <th>Name</th>
                                         <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Created At</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -56,6 +59,19 @@
                                             <td class="align-middle">{{ $loop->iteration }}</td>
                                             <td class="align-middle">{{ $user->name }}</td>
                                             <td class="align-middle">{{ $user->email }}</td>
+                                            <td class="align-middle">
+                                                @foreach ($user->roles as $role)
+                                                    <span class="badge badge-info">{{ $role->name }}</span>
+                                                @endforeach
+                                            </td>
+                                            <td class="align-middle">
+                                                @if ($user->status == 'active')
+                                                    <span class="badge badge-success">Active</span>
+                                                @else
+                                                    <span class="badge badge-danger">Inactive</span>
+                                                @endif
+                                            </td>
+                                            <td class="align-middle">{{ $user->created_at->format('d-M-y h:i:s') }}</td>
                                             <td class="py-0 align-middle">
                                                 <div class="mb-2 btn-group">
                                                     <button type="button"
@@ -123,10 +139,10 @@
         $(document).ready(function() {
             $('.btn-delete').on('click', function(e) {
                 e.preventDefault();
-                var roleId = $(this).data('id');
-                var formId = 'delete-form-' + roleId;
+                var userId = $(this).data('id');
+                var formId = 'delete-form-' + userId;
 
-                console.log('Delete clicked - Role ID: ' + roleId + ', Form ID: ' + formId);
+                console.log('Delete clicked - User ID: ' + userId + ', Form ID: ' + formId);
 
                 Swal.fire({
                     title: 'Are you sure?',

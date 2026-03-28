@@ -44,6 +44,14 @@
                           </a>
                       </li>
 
+                      <li>
+                          <a href="#" class=" waves-effect">
+                              <i class="fas fa-history"></i>
+                              <span class="ml-1">Activity
+                                  Log</span>
+                          </a>
+                      </li>
+
                   </ul>
               </div>
               <!-- Sidebar -->
