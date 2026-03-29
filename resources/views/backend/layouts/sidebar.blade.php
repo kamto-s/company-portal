@@ -22,25 +22,32 @@
                           </li>
                       @endcan
 
-                      <li class="menu-title">Posts</li>
+                      @canany(['category.permission'])
+                          <li class="menu-title">Posts</li>
+                      @endcanany
 
-                      <li class="{{ request()->routeIs('users.*') ? 'mm-active' : '' }}">
-                          <a href="{{ route('users.index') }}"
-                              class=" waves-effect {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                              <i class="fas fa-file-alt"></i>
-                              <span class="ml-1">Posts</span>
-                          </a>
-                      </li>
+                      @can('category.permission')
+                          <li class="{{ request()->routeIs('categories.*') ? 'mm-active' : '' }}">
+                              <a href="{{ route('categories.index') }}"
+                                  class=" waves-effect {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                                  <i class="fas fa-file-alt"></i>
+                                  <span class="ml-1">Categories</span>
+                              </a>
+                          </li>
+                      @endauth
 
-                      <li class="{{ request()->routeIs('users.*') ? 'mm-active' : '' }}">
+                      {{-- <li class="{{ request()->routeIs('users.*') ? 'mm-active' : '' }}">
                           <a href="{{ route('users.index') }}"
                               class=" waves-effect {{ request()->routeIs('users.*') ? 'active' : '' }}">
                               <i class="fas fa-folder"></i>
                               <span class="ml-1">Categories</span>
                           </a>
-                      </li>
+                      </li> --}}
 
-                      <li class="menu-title">Settings</li>
+                      @canany(['user.permission', 'role.permission', 'permission.permission',
+                          'activity-log.permission'])
+                          <li class="menu-title">Settings</li>
+                      @endcanany
 
                       @can('user.permission')
                           <li class="{{ request()->routeIs('users.*') ? 'mm-active' : '' }}">
@@ -72,13 +79,15 @@
                           </li>
                       @endcan
 
-                      <li>
-                          <a href="{{ route('activity-logs.index') }}" class=" waves-effect">
-                              <i class="fas fa-history"></i>
-                              <span class="ml-1">Activity
-                                  Log</span>
-                          </a>
-                      </li>
+                      @can('activity-log.permission')
+                          <li class="{{ request()->routeIs('activity-logs.*') ? 'mm-active' : '' }}">
+                              <a href="{{ route('activity-logs.index') }}" class=" waves-effect">
+                                  <i class="fas fa-history"></i>
+                                  <span class="ml-1">Activity
+                                      Log</span>
+                              </a>
+                          </li>
+                      @endcan
 
                   </ul>
               </div>

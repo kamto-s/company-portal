@@ -103,7 +103,7 @@
                                         </div>
                                         <div class="custom-control custom-radio custom-control-inline">
                                             <input type="radio" id="active" name="status" value="active"
-                                                class="custom-control-input"
+                                                class="custom-control-input "
                                                 {{ old('status', 'active') == 'active' ? 'checked' : '' }}>
                                             <label class="custom-control-label" for="active">Active</label>
                                         </div>

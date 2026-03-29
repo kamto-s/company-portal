@@ -64,8 +64,9 @@ class User extends Authenticatable
     {
         $activity->properties = $activity->properties->merge([
             'meta' => [
-                'ip' => request()->ip(),
-                'agent' => request()->userAgent(),
+                'ip' => request()?->ip() ?? 'cli',
+                'agent' => request()?->userAgent() ?? 'cli',
+                'url' => request()?->fullUrl() ?? 'cli',
             ]
         ]);
     }

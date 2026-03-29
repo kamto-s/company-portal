@@ -13,13 +13,31 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::get();
+        // $users = User::get();
+        $query = User::query();
+
+        // kalau yang login bukan superadmin
+        if (!auth()->user()->hasRole('Superadmin')) {
+            $query->whereDoesntHave('roles', function ($q) {
+                $q->where('name', 'Superadmin');
+            });
+        }
+
+        $users = $query->get();
         return view('backend.users.index', compact('users'));
     }
 
     public function create()
     {
-        $roles = Role::get();
+        // $roles = Role::get();
+        $query = Role::query();
+
+        if (!auth()->user()->hasRole('Superadmin')) {
+            $query->where('name', '!=', 'Superadmin');
+        }
+
+        $roles = $query->get();
+
         return view('backend.users.create', compact('roles'));
     }
 
@@ -57,7 +75,15 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        $roles = Role::get();
+
+        // $roles = Role::get();
+        $query = Role::query();
+
+        if (!auth()->user()->hasRole('Superadmin')) {
+            $query->where('name', '!=', 'Superadmin');
+        }
+
+        $roles = $query->get();
 
         return view('backend.users.edit', compact('user', 'roles'));
     }

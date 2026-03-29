@@ -1,5 +1,5 @@
 @extends('backend.layouts.app')
-@section('title', 'Create Permission')
+@section('title', 'Create Category')
 @push('css')
     <link href="{{ asset('backend') }}/plugins/datatables/dataTables.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/datatables/responsive.bootstrap4.css" rel="stylesheet" type="text/css" />
@@ -37,7 +37,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">@yield('title')</h4>
-                            <form method="POST" action="{{ route('permissions.store') }}">
+                            <form method="POST" action="{{ route('categories.store') }}">
                                 @csrf
                                 <div class="form-group row">
                                     <label for="name" class="col-sm-1 col-form-label required">Name</label>
@@ -52,29 +52,20 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="guard_name" class="col-sm-1 col-form-label required">Guard Name</label>
-                                    <div class="col-sm-11">
-                                        <select class="form-control @error('guard_name') is-invalid @enderror"
-                                            id="guard_name" name="guard_name">
-                                            <option value="" disabled selected>-- Select Guard Name --</option>
-                                            <option value="web">Web</option>
-                                            <option value="api">Api</option>
-                                        </select>
-                                        @error('guard_name')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
+                                    <label for="status" class="col-sm-1 col-form-label">Status</label>
+                                    <div class="mt-1 col-sm-11">
 
-                                <div class="form-group row">
-                                    <label for="group_name" class="col-sm-1 col-form-label required">Group Name</label>
-                                    <div class="col-sm-11">
-                                        <input type="text" class="form-control @error('group_name') is-invalid @enderror"
-                                            id="group_name" name="group_name" placeholder="Enter Group Name"
-                                            value="{{ old('group_name') }}">
-                                        @error('group_name')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="inactive" name="status" value="0"
+                                                class="custom-control-input" {{ old('status') === 0 ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="inactive">Inactive</label>
+                                        </div>
+
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="active" name="status" value="1"
+                                                class="custom-control-input" {{ old('status') === 1 ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="active">Active</label>
+                                        </div>
                                     </div>
                                 </div>
 

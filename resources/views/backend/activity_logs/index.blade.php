@@ -40,6 +40,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>User</th>
+                                        <th>Type</th>
                                         <th>Action</th>
                                         <th>Target</th>
                                         <th>IP</th>
@@ -49,16 +50,34 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($logs as $log)
+                                        @php
+                                            $desc = strtolower($log->description);
+
+                                            $actionType = match (true) {
+                                                str_contains($desc, 'create') => 'Create',
+                                                str_contains($desc, 'update') => 'Update',
+                                                str_contains($desc, 'delete') => 'Delete',
+                                                str_contains($desc, 'login') => 'Login',
+                                                str_contains($desc, 'logout') => 'Logout',
+                                                default => ucfirst($log->description),
+                                            };
+
+                                            $badgeClass = match (true) {
+                                                str_contains($desc, 'create') => 'badge-success',
+                                                str_contains($desc, 'update') => 'badge-warning',
+                                                str_contains($desc, 'delete') => 'badge-danger',
+                                                str_contains($desc, 'login') => 'badge-success',
+                                                str_contains($desc, 'logout') => 'badge-danger',
+                                                default => 'badge-secondary',
+                                            };
+                                        @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $log->causer->name ?? 'System' }}</td>
+                                            <td>{{ class_basename($log->subject_type) ?? '-' }}</td>
                                             <td>
-                                                <span
-                                                    class="badge
-                                            {{ str_contains($log->description, 'created') ? 'badge-success' : '' }}
-                                            {{ str_contains($log->description, 'updated') ? 'badge-warning' : '' }}
-                                            {{ str_contains($log->description, 'deleted') ? 'badge-danger' : '' }}">
-                                                    {{ $log->description }}
+                                                <span class="badge {{ $badgeClass }}">
+                                                    {{ $actionType }}
                                                 </span>
                                             </td>
                                             <td>{{ $log->subject->name ?? class_basename($log->subject_type) }}</td>
@@ -77,63 +96,105 @@
 
                             {{-- Modal detail per log --}}
                             @foreach ($logs as $log)
-                                <div class="modal fade bd-example-modal-lg" id="log-{{ $log->id }}" tabindex="-1"
-                                    role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal fade bd-example-modal-lg" id="log-{{ $log->id }}" tabindex="-1">
+                                    <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
+
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Activity Detail</h5>
-                                                <button type="button" class="close waves-effect waves-light"
-                                                    data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
+                                                <h5 class="modal-title">Activity Detail</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span>&times;</span>
                                                 </button>
                                             </div>
+
                                             <div class="modal-body">
                                                 @php
-                                                    $actionType = '';
-                                                    $badgeClass = '';
-                                                    if (str_contains($log->description, 'created')) {
-                                                        $actionType = 'Create';
-                                                        $badgeClass = 'badge-success';
-                                                    } elseif (str_contains($log->description, 'updated')) {
-                                                        $actionType = 'Update';
-                                                        $badgeClass = 'badge-warning';
-                                                    } elseif (str_contains($log->description, 'deleted')) {
-                                                        $actionType = 'Delete';
-                                                        $badgeClass = 'badge-danger';
-                                                    }
+                                                    $desc = strtolower($log->description);
+
+                                                    $actionType = match (true) {
+                                                        str_contains($desc, 'create') => 'Create',
+                                                        str_contains($desc, 'update') => 'Update',
+                                                        str_contains($desc, 'delete') => 'Delete',
+                                                        str_contains($desc, 'login') => 'Login',
+                                                        str_contains($desc, 'logout') => 'Logout',
+                                                        default => ucfirst($log->description),
+                                                    };
+
+                                                    $badgeClass = match (true) {
+                                                        str_contains($desc, 'create') => 'badge-success',
+                                                        str_contains($desc, 'update') => 'badge-warning',
+                                                        str_contains($desc, 'delete') => 'badge-danger',
+                                                        str_contains($desc, 'login') => 'badge-success',
+                                                        str_contains($desc, 'logout') => 'badge-danger',
+                                                        default => 'badge-secondary',
+                                                    };
+
+                                                    $properties = $log->properties ?? [];
+                                                    $meta = $properties['meta'] ?? [];
+                                                    $attributes = $properties['attributes'] ?? [];
+                                                    $old = $properties['old'] ?? [];
                                                 @endphp
-                                                <p>
-                                                    <strong>Action Type:</strong>
-                                                    <span class="badge {{ $badgeClass }}">{{ $actionType }}</span>
-                                                </p>
 
-                                                <p><strong>Target:</strong>
-                                                    {{ $log->subject->name ?? class_basename($log->subject_type) }}</p>
+                                                <div class="row">
+                                                    <div class="mb-3 col-md-6">
+                                                        <strong>Actor</strong><br>
+                                                        {{ $log->causer->name ?? '-' }}
+                                                    </div>
+                                                    <div class="mb-3 col-md-6">
+                                                        <strong>Date</strong><br>
+                                                        {{ $log->created_at?->format('d M Y H:i:s') ?? '-' }}
+                                                    </div>
+                                                    <div class="mb-3 col-md-6">
+                                                        <strong>Action</strong><br>
+                                                        <span class="badge {{ $badgeClass }}">
+                                                            {{ $actionType }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="mb-3 col-md-6">
+                                                        <strong>Type</strong><br>
+                                                        {{ class_basename($log->subject_type) ?? '-' }}
+                                                    </div>
+                                                    <div class="mb-3 col-md-6">
+                                                        <strong>Target</strong><br>
+                                                        {{ $log->subject->name ?? '-' }}
+                                                    </div>
+                                                    <div class="mb-3 col-md-6">
+                                                        <strong>IP Address</strong><br>
+                                                        {{ $meta['ip'] ?? '-' }}
+                                                    </div>
+                                                </div>
 
-                                                <h6>Changes:</h6>
-                                                @if (isset($log->properties['attributes']))
-                                                    <ul>
-                                                        @foreach ($log->properties['attributes'] as $key => $value)
-                                                            <li>
-                                                                <b>{{ $key }}</b>:
-                                                                {{ $log->properties['old'][$key] ?? '-' }} →
-                                                                {{ $value }}
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                @elseif(isset($log->properties['old']))
-                                                    <ul>
-                                                        @foreach ($log->properties['old'] as $key => $value)
-                                                            <li><b>{{ $key }}</b>: {{ $value }}</li>
-                                                        @endforeach
-                                                    </ul>
-                                                @endif
-
-                                                <small class="text-muted">
-                                                    IP: {{ $log->properties['meta']['ip'] ?? '-' }} |
-                                                    Browser: {{ $log->properties['meta']['agent'] ?? '-' }}
-                                                </small>
+                                                {{-- Changes --}}
+                                                <div class="mb-3">
+                                                    <strong>Changes</strong>
+                                                    @if (!empty($attributes))
+                                                        <ul class="mt-2 list-group">
+                                                            @foreach ($attributes as $key => $value)
+                                                                <li
+                                                                    class="py-2 list-group-item d-flex justify-content-between align-items-center">
+                                                                    <span><b>{{ ucfirst($key) }}</b></span>
+                                                                    <span>
+                                                                        <span class="text-danger">
+                                                                            {{ $old[$key] ?? '-' }}
+                                                                        </span>
+                                                                        →
+                                                                        <span class="text-success">
+                                                                            {{ $value ?? '-' }}
+                                                                        </span>
+                                                                    </span>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @else
+                                                        <div class="mt-2 text-muted">
+                                                            No changes data
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div class="mt-3">
+                                                    <strong>Browser</strong><br>
+                                                    <small>{{ $meta['agent'] ?? '-' }}</small>
+                                                </div>
 
                                             </div>
                                         </div>

@@ -148,7 +148,7 @@
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img class="rounded-circle header-profile-user"
                                 src="{{ asset('backend') }}/assets/images/users/avatar-3.jpg" alt="Header Avatar">
-                            <span class="ml-1 d-none d-sm-inline-block">Jamie D.</span>
+                            <span class="ml-1 d-none d-sm-inline-block">{{ Auth::user()->name }}</span>
                             <i class="mdi mdi-chevron-down d-none d-sm-inline-block"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
@@ -174,10 +174,15 @@
                                 href="javascript:void(0)">
                                 <span>Lock Account</span>
                             </a>
-                            <a class="dropdown-item d-flex align-items-center justify-content-between"
-                                href="javascript:void(0)">
-                                <span>Log Out</span>
-                            </a>
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <a href="#"
+                                    class="dropdown-item d-flex align-items-center justify-content-between"
+                                    onclick="event.preventDefault(); this.closest('form').submit();">
+                                    <span>Log Out</span>
+                                </a>
+                            </form>
                         </div>
                     </div>
 
