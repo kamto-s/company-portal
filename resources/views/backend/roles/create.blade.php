@@ -40,7 +40,7 @@
                             <form method="POST" action="{{ route('roles.store') }}">
                                 @csrf
                                 <div class="form-group row">
-                                    <label for="role_name" class="col-sm-1 col-form-label">Role Name</label>
+                                    <label for="role_name" class="col-sm-1 col-form-label required">Role Name</label>
                                     <div class="col-sm-11">
                                         <input type="text" class="form-control @error('role_name') is-invalid @enderror"
                                             id="role_name" name="role_name" placeholder="Enter Role Name"

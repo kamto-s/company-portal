@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -72,14 +73,15 @@ class UserController extends Controller
             'status' => 'required',
         ]);
 
-        $user = User::find($id);
+
+        $user = User::findOrFail($id);
         $user->name = $request->name;
         $user->email = $request->email;
         if ($request->password) {
             $user->password = Hash::make($request->password);
         }
-
         $user->status = $request->status;
+
         $user->save();
 
         $user->roles()->detach();

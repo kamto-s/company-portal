@@ -1,12 +1,12 @@
 @extends('backend.layouts.app')
-@section('title', 'Roles')
+@section('title', 'Permissions')
 @push('css')
     <link href="{{ asset('backend') }}/plugins/datatables/dataTables.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/datatables/responsive.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/datatables/buttons.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/datatables/select.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/sweetalert2custom/sweetalert2.min.css" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('backend') }}//assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('backend') }}/assets/css/custom.css" rel="stylesheet" type="text/css" />
 @endpush
 @section('content')
     <div class="page-content">
@@ -36,8 +36,8 @@
                         <div class="card-body">
                             <div class="mb-3 d-flex align-items-center justify-content-between">
                                 <h4 class="m-0 card-title">@yield('title')</h4>
-                                @can('role.create')
-                                    <a href="{{ route('roles.create') }}" class="btn btn-primary justify-content-between">
+                                @can('permission.create')
+                                    <a href="{{ route('permissions.create') }}" class="btn btn-primary justify-content-between">
                                         <i class="mr-1 align-middle fas fa-plus-circle"></i> Create
                                     </a>
                                 @endcan
@@ -46,21 +46,34 @@
                                 <thead>
                                     <tr>
                                         <th class="row">#</th>
-                                        <th>Role Name</th>
+                                        <th>Name</th>
+                                        <th>Guard Name</th>
+                                        <th>Group Name</th>
                                         <th>Created At</th>
-                                        @canany(['role.edit', 'role.delete'])
+                                        @canany(['permission.edit', 'permission.delete'])
                                             <th>Action</th>
                                         @endcanany
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    @forelse ($roles as $role)
+                                    @forelse ($permissions as $permission)
                                         <tr>
                                             <td class="align-middle">{{ $loop->iteration }}</td>
-                                            <td class="align-middle">{{ $role->name }}</td>
-                                            <td class="align-middle">{{ $role->created_at->format('d-M-y h:i:s') }}</td>
-                                            @canany(['role.edit', 'role.delete'])
+                                            <td class="align-middle">{{ $permission->name }}</td>
+                                            <td class="align-middle">
+                                                @if ($permission->guard_name == 'web')
+                                                    <span
+                                                        class="badge badge-primary">{{ ucfirst($permission->guard_name) }}</span>
+                                                @else
+                                                    <span
+                                                        class="badge badge-success">{{ ucfirst($permission->guard_name) }}</span>
+                                                @endif
+                                            </td>
+                                            <td class="align-middle">{{ $permission->group_name }}</td>
+                                            <td class="align-middle">{{ $permission->created_at->format('d-M-y h:i:s') }}
+                                            </td>
+                                            @canany(['permission.edit', 'permission.delete'])
                                                 <td class="py-0 align-middle">
                                                     <div class="mb-2 btn-group">
                                                         <button type="button"
@@ -68,20 +81,20 @@
                                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
                                                                 class="bx bx-dots-vertical-rounded"></i></button>
                                                         <div class="dropdown-menu">
-                                                            @can('role.edit')
+                                                            @can('permission.edit')
                                                                 <a class="dropdown-item"
-                                                                    href="{{ route('roles.edit', $role->id) }}">
+                                                                    href="{{ route('permissions.edit', $permission->id) }}">
                                                                     <i class="mr-2 fas fa-edit text-warning"></i>Edit
                                                                 </a>
                                                             @endcan
-                                                            @can('role.delete')
+                                                            @can('permission.delete')
                                                                 <a class="dropdown-item btn-delete" href="javascript:void(0)"
-                                                                    data-id="{{ $role->id }}">
+                                                                    data-id="{{ $permission->id }}">
                                                                     <i class="mr-2 fas fa-trash-alt text-danger"></i>Delete
                                                                 </a>
                                                                 <form method="POST"
-                                                                    action="{{ route('roles.delete', $role->id) }}"
-                                                                    id="delete-form-{{ $role->id }}" style="display: none">
+                                                                    action="{{ route('permissions.delete', $permission->id) }}"
+                                                                    id="delete-form-{{ $permission->id }}" style="display: none">
                                                                     @csrf
                                                                     @method('DELETE')
                                                                 </form>
@@ -130,36 +143,30 @@
     <!-- SweetAlert2 confirm delete -->
     <script src="{{ asset('backend') }}/plugins/sweetalert2custom/sweetalert2.all.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).on('click', '.btn-delete', function(e) {
+            e.preventDefault();
 
-            $('.btn-delete').on('click', function(e) {
-                e.preventDefault();
-                var roleId = $(this).data('id');
-                var formId = 'delete-form-' + roleId;
+            var dataId = $(this).data('id');
+            var formId = 'delete-form-' + dataId;
 
-                console.log('Delete clicked - Role ID: ' + roleId + ', Form ID: ' + formId);
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        console.log('Confirmed - Submitting form: ' + formId);
-                        var form = document.getElementById(formId);
-                        if (form) {
-                            form.submit();
-                        } else {
-                            console.error('Form not found with ID: ' + formId);
-                            Swal.fire('Error', 'Form not found', 'error');
-                        }
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var form = document.getElementById(formId);
+                    if (form) {
+                        form.submit();
+                    } else {
+                        Swal.fire('Error', 'Form not found', 'error');
                     }
-                });
+                }
             });
         });
     </script>

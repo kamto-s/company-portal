@@ -70,11 +70,9 @@ class RoleController extends Controller
 
         $role = Role::findById($id);
 
-        $permissions = $request->input('permissions');
+        $permissions = $request->input('permissions', []);
 
-        if (!empty($permissions)) {
-            $role->syncPermissions($permissions);
-        }
+        $role->syncPermissions($permissions);
 
         Alert::success(title: 'Success', text: 'Role updated successfully');
 

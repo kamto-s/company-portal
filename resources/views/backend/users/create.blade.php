@@ -40,7 +40,7 @@
                             <form method="POST" action="{{ route('users.store') }}">
                                 @csrf
                                 <div class="form-group row">
-                                    <label for="name" class="col-sm-1 col-form-label">Name</label>
+                                    <label for="name" class="col-sm-1 col-form-label required">Name</label>
                                     <div class="col-sm-11">
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
                                             id="name" name="name" placeholder="Enter Name"
@@ -52,7 +52,7 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="email" class="col-sm-1 col-form-label">Email</label>
+                                    <label for="email" class="col-sm-1 col-form-label required">Email</label>
                                     <div class="col-sm-11">
                                         <input type="email" class="form-control @error('email') is-invalid @enderror"
                                             id="email" name="email" placeholder="Enter Email"
@@ -64,7 +64,7 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="password" class="col-sm-1 col-form-label">Password</label>
+                                    <label for="password" class="col-sm-1 col-form-label required">Password</label>
                                     <div class="col-sm-11">
                                         <input type="password" class="form-control @error('password') is-invalid @enderror"
                                             id="password" name="password" placeholder="Enter Password"
@@ -76,7 +76,7 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="role_assign" class="col-sm-1 col-form-label">Role</label>
+                                    <label for="role_assign" class="col-sm-1 col-form-label required">Role</label>
                                     <div class="col-sm-11">
                                         <select multiple class="form-control @error('role_assign') is-invalid @enderror"
                                             id="role_assign" name="role_assign[]">
@@ -93,7 +93,7 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="status" class="col-sm-1 col-form-label">Status</label>
+                                    <label for="status" class="col-sm-1 col-form-label required">Status</label>
                                     <div class="mt-1 col-sm-11">
                                         <div class="custom-control custom-radio custom-control-inline">
                                             <input type="radio" id="inactive" name="status" value="inactive"

@@ -36,9 +36,11 @@
                         <div class="card-body">
                             <div class="mb-3 d-flex align-items-center justify-content-between">
                                 <h4 class="m-0 card-title">@yield('title')</h4>
-                                <a href="{{ route('users.create') }}" class="btn btn-primary justify-content-between">
-                                    <i class="mr-1 align-middle fas fa-plus-circle"></i> Create
-                                </a>
+                                @can('user.create')
+                                    <a href="{{ route('users.create') }}" class="btn btn-primary justify-content-between">
+                                        <i class="mr-1 align-middle fas fa-plus-circle"></i> Create
+                                    </a>
+                                @endcan
                             </div>
                             <table id="basic-datatable" class="table table-hover nowrap">
                                 <thead>
@@ -49,7 +51,9 @@
                                         <th>Role</th>
                                         <th>Status</th>
                                         <th>Created At</th>
-                                        <th>Action</th>
+                                        @canany(['user.edit', 'user.delete'])
+                                            <th>Action</th>
+                                        @endcanany
                                     </tr>
                                 </thead>
 
@@ -72,30 +76,36 @@
                                                 @endif
                                             </td>
                                             <td class="align-middle">{{ $user->created_at->format('d-M-y h:i:s') }}</td>
-                                            <td class="py-0 align-middle">
-                                                <div class="mb-2 btn-group">
-                                                    <button type="button"
-                                                        class="btn btn-link dropdown-toggle waves-effect waves-light"
-                                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
-                                                            class="bx bx-dots-vertical-rounded"></i></button>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item"
-                                                            href="{{ route('users.edit', $user->id) }}">
-                                                            <i class="mr-2 fas fa-edit text-warning"></i>Edit
-                                                        </a>
-                                                        <a class="dropdown-item btn-delete" href="javascript:void(0)"
-                                                            data-id="{{ $user->id }}">
-                                                            <i class="mr-2 fas fa-trash-alt text-danger"></i>Delete
-                                                        </a>
-                                                        <form method="POST"
-                                                            action="{{ route('users.delete', $user->id) }}"
-                                                            id="delete-form-{{ $user->id }}" style="display: none">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                        </form>
+                                            @canany(['user.edit', 'user.delete'])
+                                                <td class="py-0 align-middle">
+                                                    <div class="mb-2 btn-group">
+                                                        <button type="button"
+                                                            class="btn btn-link dropdown-toggle waves-effect waves-light"
+                                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+                                                                class="bx bx-dots-vertical-rounded"></i></button>
+                                                        <div class="dropdown-menu">
+                                                            @can('user.edit')
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('users.edit', $user->id) }}">
+                                                                    <i class="mr-2 fas fa-edit text-warning"></i>Edit
+                                                                </a>
+                                                            @endcan
+                                                            @can('user.delete')
+                                                                <a class="dropdown-item btn-delete" href="javascript:void(0)"
+                                                                    data-id="{{ $user->id }}">
+                                                                    <i class="mr-2 fas fa-trash-alt text-danger"></i>Delete
+                                                                </a>
+                                                                <form method="POST"
+                                                                    action="{{ route('users.delete', $user->id) }}"
+                                                                    id="delete-form-{{ $user->id }}" style="display: none">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                </form>
+                                                            @endcan
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
+                                                </td>
+                                            @endcanany
                                         </tr>
                                     @empty
                                         <tr>

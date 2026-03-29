@@ -16,6 +16,7 @@
     <link href="{{ asset('backend') }}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/assets/css/theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('backend') }}/assets/css/custom.css" rel="stylesheet" type="text/css" />
 
     @stack('css')
 </head>

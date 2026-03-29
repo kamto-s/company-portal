@@ -40,7 +40,7 @@
                                 @csrf
                                 @method('PUT')
                                 <div class="form-group row">
-                                    <label for="role_name" class="col-sm-1 col-form-label">Role Name</label>
+                                    <label for="role_name" class="col-sm-1 col-form-label required">Role Name</label>
                                     <div class="col-sm-11">
                                         <input type="text" class="form-control" id="role_name" name="role_name"
                                             placeholder="Enter Role Name" value="{{ $role->name }}">
@@ -65,11 +65,7 @@
                                                 <input type="checkbox" class="custom-control-input"
                                                     id="{{ Str::slug($groupName) }}" value="{{ $groupName }}"
                                                     onclick="checkPermissionByGroup('role-{{ $loop->iteration }}-management-checkbox', this)"
-                                                    {{ $permissions->every(function ($permission) use ($rolePermissions) {
-                                                        return in_array($permission->name, $rolePermissions);
-                                                    })
-                                                        ? 'checked'
-                                                        : '' }}>
+                                                    {{ $permissions->pluck('name')->intersect($rolePermissions)->isNotEmpty() ? 'checked' : '' }}>
                                                 <label class="custom-control-label"
                                                     for="{{ Str::slug($groupName) }}">{{ $groupName }}</label>
                                             </div>

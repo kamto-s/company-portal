@@ -1,5 +1,5 @@
 @extends('backend.layouts.app')
-@section('title', 'Edit User')
+@section('title', 'Edit Permission')
 @push('css')
     <link href="{{ asset('backend') }}/plugins/datatables/dataTables.bootstrap4.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('backend') }}/plugins/datatables/responsive.bootstrap4.css" rel="stylesheet" type="text/css" />
@@ -21,7 +21,7 @@
                             <ol class="m-0 breadcrumb">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Company</a></li>
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('users.index') }}">List users</a>
+                                    <a href="{{ route('users.index') }}">List Permissions</a>
                                 </li>
                                 <li class="breadcrumb-item active">@yield('title')</li>
                             </ol>
@@ -37,7 +37,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">@yield('title')</h4>
-                            <form method="POST" action="{{ route('users.update', $user->id) }}">
+                            <form method="POST" action="{{ route('permissions.update', $permission->id) }}">
                                 @csrf
                                 @method('PUT')
                                 <div class="form-group row">
@@ -45,7 +45,7 @@
                                     <div class="col-sm-11">
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
                                             id="name" name="name" placeholder="Enter Name"
-                                            value="{{ old('name', $user->name) }}">
+                                            value="{{ old('name', $permission->name) }}">
                                         @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -53,70 +53,38 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="email" class="col-sm-1 col-form-label required">Email</label>
+                                    <label for="guard_name" class="col-sm-1 col-form-label required">Guard Name</label>
                                     <div class="col-sm-11">
-                                        <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                            id="email" name="email" placeholder="Enter Email"
-                                            value="{{ old('email', $user->email) }}">
-                                        @error('email')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="form-group row">
-                                    <label for="password" class="col-sm-1 col-form-label">Password</label>
-                                    <div class="col-sm-11">
-                                        <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                            id="password" name="password" placeholder="Enter Password"
-                                            value="{{ old('password') }}">
-                                        @error('password')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="form-group row">
-                                    <label for="role_assign" class="col-sm-1 col-form-label required">Role</label>
-                                    <div class="col-sm-11">
-                                        <select multiple class="form-control @error('role_assign') is-invalid @enderror"
-                                            id="role_assign" name="role_assign[]">
-                                            @foreach ($roles as $role)
-                                                <option value="{{ $role->id }}"
-                                                    {{ $user->hasRole($role->id) ? 'selected' : '' }}>
-                                                    {{ $role->name }}</option>
-                                            @endforeach
+                                        <select class="form-control @error('guard_name') is-invalid @enderror"
+                                            id="guard_name" name="guard_name">
+                                            <option value="" disabled selected>-- Select Guard Name --</option>
+                                            <option value="web" {{ $permission->guard_name == 'web' ? 'selected' : '' }}>
+                                                Web</option>
+                                            <option value="api"
+                                                {{ $permission->guard_name == 'api' ? 'selected' : '' }}>Api</option>
                                         </select>
-                                        @error('role_assign')
+                                        @error('guard_name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="status" class="col-sm-1 col-form-label required">Status</label>
-                                    <div class="mt-1 col-sm-11">
-                                        <div class="custom-control custom-radio custom-control-inline">
-                                            <input type="radio" id="inactive" name="status" value="inactive"
-                                                class="custom-control-input"
-                                                {{ old('status', $user->status) == 'inactive' ? 'checked' : '' }}>
-                                            <label class="custom-control-label" for="inactive">Inactive</label>
-                                        </div>
-                                        <div class="custom-control custom-radio custom-control-inline">
-                                            <input type="radio" id="active" name="status" value="active"
-                                                class="custom-control-input"
-                                                {{ old('status', $user->status) == 'active' ? 'checked' : '' }}>
-                                            <label class="custom-control-label" for="active">Active</label>
-                                        </div>
-                                        @error('status')
+                                    <label for="group_name" class="col-sm-1 col-form-label required">Group Name</label>
+                                    <div class="col-sm-11">
+                                        <input type="text" class="form-control @error('group_name') is-invalid @enderror"
+                                            id="group_name" name="group_name" placeholder="Enter Group Name"
+                                            value="{{ old('group_name', $permission->group_name) }}">
+                                        @error('group_name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
 
                                 <div class="mt-5 mb-0 form-group">
-                                    <a href="{{ route('users.index') }}" class="mr-2 align-middle btn btn-secondary"><i
-                                            class="mr-1 fas fa-arrow-left"></i> Back</a>
+                                    <a href="{{ route('permissions.index') }}"
+                                        class="mr-2 align-middle btn btn-secondary"><i class="mr-1 fas fa-arrow-left"></i>
+                                        Back</a>
                                     <button type="submit" class="align-baseline btn btn-primary"><i
                                             class="mr-1 fas fa-save"></i> Save
                                         Changes</button>
